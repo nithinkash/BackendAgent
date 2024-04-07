@@ -1,0 +1,9 @@
+flask
+flask-cors
+toml
+colorama
+requests
+fastlogging
+Jinja2
+keybert
+sqlmodel
