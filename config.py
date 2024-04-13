@@ -47,6 +47,9 @@ class Config:
 
     def get_logging_prompts(self):
         return self.config["LOGGING"]["LOG_PROMPTS"] == "true"
+    
+    def get_setup_config(self):
+        return self.config["SETUP"]["NEW_SETUP"]
 
     def set_ollama_api_endpoint(self, endpoint):
         self.config["API_ENDPOINTS"]["OLLAMA"] = endpoint

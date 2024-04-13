@@ -5,16 +5,19 @@ import subprocess
 
 from jinja2 import Environment, BaseLoader
 
-from agents.patcher import Patcher
-
+from designer.designer import Designer
+from logger import Logger
 from llm import LLM
 
 PROMPT = open("agents/runner/prompt.jinja2", "r").read().strip()
+
+logger = Logger()
 
 class Runner:
     def __init__(self, base_model: str):
         self.base_model = base_model
         self.llm = LLM(model_id=base_model)
+        self.designer = Designer(base_model=base_model)
 
     def render(self, request) -> str:
         env = Environment(loader=BaseLoader())
@@ -78,6 +81,9 @@ class Runner:
             return 
 
     def execute(self, request):
+        
+        self.designer.execute() 
+
         prompt = self.render(request)
         response = self.llm.inference(prompt)
         

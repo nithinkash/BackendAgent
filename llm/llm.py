@@ -6,22 +6,20 @@ from .claude_client import Claude
 from .openai_client import OpenAI
 from .groq_client import Groq
 
-from state import AgentState
-
 import tiktoken
 
-from ..config import Config
-from ..logger import Logger
+from config import Config
+from logger import Logger
 
-TOKEN_USAGE = 0
-TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
+#TOKEN_USAGE = 0
+#TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
 
 class Model(Enum):
     CLAUDE_3_OPUS = ("Claude 3 Opus", "claude-3-opus-20240229")
     CLAUDE_3_SONNET = ("Claude 3 Sonnet", "claude-3-sonnet-20240229")
     CLAUDE_3_HAIKU = ("Claude 3 Haiku", "claude-3-haiku-20240307")
     GPT_4_TURBO = ("GPT-4 Turbo", "gpt-4-0125-preview")
-    GPT_3_5 = ("GPT-3.5", "gpt-3.5-turbo-0125")
+    GPT_3_5 = ("GPT-3.5", "gpt-3.5-turbo")
     OLLAMA_MODELS = [
         (
             model["name"].split(":")[0],
@@ -32,7 +30,7 @@ class Model(Enum):
     GROQ = ("GROQ Mixtral", "mixtral-8x7b-32768")
 
 
-logger = Logger(filename="devika_prompts.log")
+logger = Logger(filename="BackendAgentPrompts.log")
 
 class LLM:
     def __init__(self, model_id: str = None):
@@ -50,9 +48,9 @@ class LLM:
         models.update(ollama_models)
         return models
 
-    def update_global_token_usage(self, string: str, project_name: str):
-        token_usage = len(TIKTOKEN_ENC.encode(string))
-        AgentState().update_token_usage(project_name, token_usage)
+    
+    #def update_global_token_usage(self, string: str, project_name: str):
+    #   token_usage = len(TIKTOKEN_ENC.encode(string))
 
     def inference(self, prompt: str) -> str:
         #self.update_global_token_usage(prompt, project_name)
