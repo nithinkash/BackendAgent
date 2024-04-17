@@ -60,7 +60,7 @@ def route_logger(logger: Logger):
             # Log exit point, including response summary if possible
             try:
                 if log_enabled:
-                    response_summary = response.get_data(as_text=True)
+                    response_summary = response
                     logger.debug(f"{request.path} {request.method} - Response: {response_summary}")
             except Exception as e:
                 logger.exception(f"{request.path} {request.method} - {e})")

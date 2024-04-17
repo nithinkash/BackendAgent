@@ -13,8 +13,9 @@ class Designer:
     def __init__(self, base_model) -> None:
         self.llm = LLM(model_id=base_model)
         logger.info("Loading previous conversations and backend Design schema")
-        with open("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json", "r") as json_file:
+        with open("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json", "r+") as json_file:
             self.conversations = json.load(json_file)
+        json_file.close()
 
     def render(self):
         env = Environment(loader=BaseLoader())
@@ -39,28 +40,30 @@ class Designer:
         
     def run_code(self, commands, project_path="/Users/nithinkashyap/MyProjects/BackendAgent/db"):  
         
-        for command in commands:
-            command_set = command.split(" ")
+        print("Commands: ", commands)
+    
+        command_set = "sqlite3 BackendAgent.db '{}'".format("; ".join(commands[1:]))
             
-            process = subprocess.run(
-                command_set,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                cwd=project_path
+        process = subprocess.Popen(
+            command_set,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=project_path,
+            shell=True
             )
-            command_output = process.stdout.decode('utf-8')
-            logger.info(command_output)
-            command_failed = process.returncode != 0
-            if command_failed:
-                logger.error(command_failed)
-            return 
+      
+        logger.info(process.stdout)
+        command_failed = process.returncode != 0
+        if command_failed:
+            logger.error(command_failed)
+        return 
     
     def execute(self):
         prompt = self.render()
         print(prompt)
         response = self.llm.inference(prompt)
-        print(response)
-        
+        print("LLM Responded with: ", response)
+
         valid_response = self.validate_response(response)
         
         print("=====" * 10)
@@ -68,8 +71,23 @@ class Designer:
         
         if valid_response:
             self.run_code(valid_response)
-            logger.info("Design has been succesully loaded to LLM: ", response)
+            logger.info("Design has been succesully loaded to LLM: {}".format(response))
+
+
+            self.conversations["messages"].append({
+                "role": "User",
+                "content": prompt
+            })
+
+            self.conversations["messages"].append({
+                "role": "BackendAgent",
+                "content": response
+            })
+            with open("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json", "r+") as json_file:
+                json.dump(self.conversations, json_file, indent=4)
         else:
             logger.error("Something wrong with the response from LLM")
+
+        return 
 
     

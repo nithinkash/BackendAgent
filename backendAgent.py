@@ -5,27 +5,29 @@ from logger import Logger, route_logger
 from config import Config
 import uuid
 import os
+import shutil
 
 from init import init_backendAgent
 from project import init_design
 from agents.designer.designer import Designer
+from agents.runner import Runner
 
 app = Flask(__name__)
 log = logging.getLogger("werkzeug")
 log.disabled = True
-BASE_MODEL="mistral:latest"
+BASE_MODEL="gpt-3.5-turbo"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 CORS(app)
 
 logger = Logger()
 config = Config()
 
-@app.route("/api/create", methods=["POST"])
+@app.route("/api/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 @route_logger(logger)
-def postData():
-    requestId = str(uuid.uuid1())
-    data = request.json
-    return jsonify({"message": "Message frrm the LLM"})
+def apiGateway(path):
+    runner = Runner(base_model=BASE_MODEL)
+    response = runner.execute(request=request)
+    return response 
     
 @app.route("/api/retrieve", methods=["GET"])
 @route_logger(logger)
@@ -36,8 +38,10 @@ def getData():
 if __name__ == "__main__":
     logger.info("Booting up... This may take a few seconds")
     init_backendAgent()
+    if not os.path.isfile("config.toml"):
+        shutil.copy(".asset/config.toml", os.getcwd())
     #if not os.path.isfile("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json"):
-    #init_design(BASE_MODEL)
-    designer = Designer(base_model=BASE_MODEL)
-    designer.execute()
-    app.run(debug=False, port=1337, host="0.0.0.0")
+    #   init_design(BASE_MODEL)
+    #designer = Designer(base_model=BASE_MODEL)
+    #designer.execute()
+    app.run(debug=True, port=25680, host="0.0.0.0", use_reloader=False)

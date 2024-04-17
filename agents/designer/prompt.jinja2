@@ -5,26 +5,28 @@ Full conversation:
 {{ conversations }}
 ```
 
-System Operating System and db is MAC os with sqlite3 db.
+Operating System is MAC os and db is sqlite3 db.
 
-your task is to give commands to create whole database schema as from the conversation on BackendAgent.db file
+your task is to giveexact sql qyery commands to create whole database tables as from the conversation on BackendAgent.db file
 
 Your response should be in the following example format:
 ```
+```
 {
     "commands": [
-        "command1",
-        "command2"
+        "sqlite3 BackendAgent.db"
     ]
 }
+```
 ```
 this is just an example don't just give this as a response look at the conversations for the context
 
 Rules:
+-You can't ask any further question and you have a liberty to assume few things to fill in the blanks
 - You wrote the code, never address the user directly. You should not say things like "The code you provided", instead use "The code I wrote".
 - Read the full context, including the code (if any) carefully to construct the commands required to run the project.
 - The command should be compatible with the system operating system provided.
 - You are inside the project directory, so just run the commands as if you're inside the project directory as the working directory.
 - Do not do "cd" into the project directory. The system is already in the project directory.
 
-Any response other than the JSON format will be rejected by the system.
+don't add any warning, message before or after format to the response, response other than the JSON format will be rejected by the system.
