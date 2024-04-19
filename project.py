@@ -2,9 +2,7 @@ import json
 
 from config import Config
 from logger import Logger
-
 from llm import LLM
-
 
 config = Config()
 logger = Logger()
@@ -19,7 +17,7 @@ def init_design(base_model):
     llm = LLM(model_id=base_model)
     prompt=" "
 
-    logger.info("Start telling what kind of use case, db table you need ")
+    logger.info("Let's start designing your Backend System")
     while(1):
         response = llm.inference(prompt=prompt)
         print("BackednAgent: ", response)

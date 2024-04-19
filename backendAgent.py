@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_cors import CORS
 import logging
 from logger import Logger, route_logger
 from config import Config
-import uuid
 import os
 import shutil
 
@@ -28,20 +27,15 @@ def apiGateway(path):
     runner = Runner(base_model=BASE_MODEL)
     response = runner.execute(request=request)
     return response 
-    
-@app.route("/api/retrieve", methods=["GET"])
-@route_logger(logger)
-def getData():
-    requestId = str(uuid.uuid1())
-    return jsonify({"data":"From LLM"})
 
 if __name__ == "__main__":
     logger.info("Booting up... This may take a few seconds")
     init_backendAgent()
     if not os.path.isfile("config.toml"):
         shutil.copy(".asset/config.toml", os.getcwd())
-    #if not os.path.isfile("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json"):
-    #   init_design(BASE_MODEL)
-    #designer = Designer(base_model=BASE_MODEL)
-    #designer.execute()
+        input("Please set the config.toml file and press enter")
+    if not os.path.isfile(os.path.join(os.getcwd(),".assets/designChat.json")):
+       init_design(BASE_MODEL)
+       designer = Designer(base_model=BASE_MODEL)
+       designer.execute()
     app.run(debug=True, port=25680, host="0.0.0.0", use_reloader=False)

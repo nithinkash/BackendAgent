@@ -10,8 +10,4 @@ tiktoken
 ollama
 openai
 anthropic
-sqlmodel
-keybert
-GitPython
-Markdown
 groq

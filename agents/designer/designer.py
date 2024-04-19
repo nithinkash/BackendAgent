@@ -2,10 +2,11 @@ from llm import LLM
 import json 
 from jinja2 import Environment, BaseLoader
 import subprocess
+import os 
 
 from logger import Logger
 
-logger =Logger()
+logger =Logger("designer.log")
 
 PROMPT = open("agents/designer/prompt.jinja2", "r").read().strip()
 
@@ -13,7 +14,7 @@ class Designer:
     def __init__(self, base_model) -> None:
         self.llm = LLM(model_id=base_model)
         logger.info("Loading previous conversations and backend Design schema")
-        with open("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json", "r+") as json_file:
+        with open(os.path.join(os.getcwd(),".assets/designChat.json"), "r+") as json_file:
             self.conversations = json.load(json_file)
         json_file.close()
 
@@ -38,9 +39,7 @@ class Designer:
         else:
             return response["commands"]
         
-    def run_code(self, commands, project_path="/Users/nithinkashyap/MyProjects/BackendAgent/db"):  
-        
-        print("Commands: ", commands)
+    def run_code(self, commands, project_path=os.path.join(os.getcwd(), "db")):  
     
         command_set = "sqlite3 BackendAgent.db '{}'".format("; ".join(commands[1:]))
             
@@ -52,17 +51,18 @@ class Designer:
             shell=True
             )
       
-        logger.info(process.stdout)
-        command_failed = process.returncode != 0
-        if command_failed:
-            logger.error(command_failed)
+        output, error = process.communicate()
+        if output:
+            logger.info(output)
+        else:
+            logger.error(error)
         return 
     
     def execute(self):
         prompt = self.render()
-        print(prompt)
+        logger.info(prompt)
         response = self.llm.inference(prompt)
-        print("LLM Responded with: ", response)
+        logger.info("LLM Responded with: "+ response)
 
         valid_response = self.validate_response(response)
         
@@ -83,7 +83,7 @@ class Designer:
                 "role": "BackendAgent",
                 "content": response
             })
-            with open("/Users/nithinkashyap/MyProjects/BackendAgent/.assets/designChat.json", "r+") as json_file:
+            with open(os.path.join(os.getcwd(),".assets/designChat.json"), "r+") as json_file:
                 json.dump(self.conversations, json_file, indent=4)
         else:
             logger.error("Something wrong with the response from LLM")

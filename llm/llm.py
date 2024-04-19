@@ -11,8 +11,6 @@ import tiktoken
 from config import Config
 from logger import Logger
 
-#TOKEN_USAGE = 0
-#TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
 
 class Model(Enum):
     CLAUDE_3_OPUS = ("Claude 3 Opus", "claude-3-opus-20240229")
@@ -30,7 +28,7 @@ class Model(Enum):
     GROQ = ("GROQ Mixtral", "mixtral-8x7b-32768")
 
 
-logger = Logger(filename="BackendAgentPrompts.log")
+logger = Logger()
 
 class LLM:
     def __init__(self, model_id: str = None):
@@ -48,12 +46,7 @@ class LLM:
         models.update(ollama_models)
         return models
 
-    
-    #def update_global_token_usage(self, string: str, project_name: str):
-    #   token_usage = len(TIKTOKEN_ENC.encode(string))
-
     def inference(self, prompt: str) -> str:
-        #self.update_global_token_usage(prompt, project_name)
         
         model = self.model_id_to_enum_mapping()[self.model_id]
 
@@ -73,7 +66,5 @@ class LLM:
 
         if self.log_prompts:
             logger.debug(f"Response ({model}): --> {response}")
-
-        #self.update_global_token_usage(response, project_name)
         
         return response
