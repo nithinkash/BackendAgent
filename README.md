@@ -39,7 +39,7 @@ Version's requirements
 
 To install BackendAgent, follow these steps:
 
-1. Clone the Devika repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/nithinkash/BackendAgent.git
    ```
@@ -73,7 +73,7 @@ To install BackendAgent, follow these steps:
 > #For Oolama Models please specify installed models in your system, to check the list of installed models use command
 > ollama list
 ```
-4. Start the Devika server:
+4. Start the server:
    ```bash
    python BackendAgent.py
    ```
